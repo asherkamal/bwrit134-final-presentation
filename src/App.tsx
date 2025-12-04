@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, BookOpen, Heart, Users, Sun, Sparkles, Flower2 } from 'lucide-react';
+import { ChevronDown, BookOpen, Heart, Users, Sun, CircleIcon } from 'lucide-react';
 import { getGeminiResponse } from './geminiService';
 import omImage from './assets/om.jpg'; 
 import templeImage from './assets/temple.jpg';
+import elephant from './assets/elephant.jpg';
 
 
 // Types
@@ -190,7 +191,6 @@ const LandingPage = ({ onContinue }: LandingPageProps) => {
 
 
 
-
 const SplitScreen = () => {
   const [progress, setProgress] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -201,10 +201,10 @@ const SplitScreen = () => {
       
       const rect = containerRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
+      
       const totalDist = rect.height - windowHeight;
       const scrolled = -rect.top;
 
-      // Calculate 0 to 1 progress based on how far we've scrolled through this component
       let currentProgress = Math.max(0, Math.min(1, scrolled / totalDist));
       
       setProgress(currentProgress);
@@ -215,19 +215,14 @@ const SplitScreen = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // LOGIC: 
-  // 0.0 - 0.6: The split screen stays static (user reads)
-  // 0.6 - 0.9: The split screen slides out (merges)
-  // 0.9 - 1.0: The final message is fully visible
+  // Animation Logic remains the same
   const mergeStart = 0.6;
   const mergeDuration = 0.3;
   
-  // Calculate the slide value (0% to 100%)
   const slideValue = progress < mergeStart 
     ? 0 
     : Math.min(1, (progress - mergeStart) / mergeDuration);
 
-  // Calculate opacity for the final overlay
   const overlayOpacity = slideValue;
 
   return (
@@ -237,79 +232,94 @@ const SplitScreen = () => {
       {/* 2. STICKY WRAPPER: Keeps the content fixed while scrolling the 400vh track */}
       <div className="sticky top-0 h-screen w-full overflow-hidden flex">
         
-        {/* --- LEFT: The Philosophical/Internal Path (Nirguna) --- */}
+        {/* --- LEFT: The Path of Tradition (Dharma) --- */}
         <div 
-          className="flex-1 bg-slate-900 relative flex flex-col justify-center items-center px-8 border-r border-white/10"
+          className="flex-1 bg-amber-900 relative flex flex-col justify-center items-center px-8 border-r border-white/10"
           style={{ 
             transform: `translateX(-${slideValue * 100}%)`,
-            transition: 'transform 0.1s linear' // linear is smoother for scroll-bound anims
+            transition: 'transform 0.1s linear'
           }}
         >
-          {/* Abstract visuals for "Formless" */}
+          {/* Visuals for "Tradition" */}
           <div className="absolute inset-0 overflow-hidden opacity-30">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500 rounded-full blur-[100px] animate-pulse" />
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-yellow-500 rounded-full blur-[100px]" />
           </div>
 
           <div className="relative z-10 max-w-md text-center">
-            <div className="flex justify-center mb-6 text-blue-300">
-              <Sparkles size={48} strokeWidth={1} />
+            <div className="flex justify-center mb-6 text-yellow-300">
+              <BookOpen size={48} strokeWidth={1} />
             </div>
-            <h2 className="text-3xl md:text-5xl font-serif text-white mb-6">Nirguna</h2>
-            <p className="text-blue-100 text-lg md:text-xl font-light italic mb-8">
-              "The Formless Absolute"
+            <h2 className="text-3xl md:text-5xl font-serif text-white mb-6">Dharma</h2>
+            <p className="text-yellow-100 text-lg md:text-xl font-light italic mb-8">
+              "The Path of Duty and Tradition"
             </p>
-            <div className="text-slate-300 space-y-4 text-left border-l-2 border-blue-500/50 pl-6">
-              <p>Focus on <strong>Vedanta</strong> (Philosophy)</p>
-              <p>God is energy, consciousness, and truth.</p>
-              <p>Worship through meditation (Dhyana) and self-inquiry.</p>
+            <div className="text-amber-100 space-y-4 text-left border-l-2 border-yellow-500/50 pl-6">
+              <p>Focus on <strong>Scripture</strong> (Vedas, Upanishads)</p>
+              <p>Values: Righteousness, Order, and Ancestry.</p>
+              <p>Worship through Rites (Sanskars) and Ethical Living.</p>
             </div>
           </div>
         </div>
 
-        {/* --- RIGHT: The Devotional/Ritual Path (Saguna) --- */}
+        {/* --- RIGHT: The Path of Action (Karma) --- */}
         <div 
-          className="flex-1 bg-gradient-to-br from-orange-900 to-red-950 relative flex flex-col justify-center items-center px-8"
+          className="flex-1 bg-blue-950 relative flex flex-col justify-center items-center px-8"
           style={{ 
             transform: `translateX(${slideValue * 100}%)`,
             transition: 'transform 0.1s linear'
           }}
         >
-          {/* Ornamented visuals for "Form" */}
-          <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/black-scales.png')] mix-blend-overlay" />
+          {/* Visuals for "Action" */}
+          <div className="absolute inset-0 opacity-20 bg-gradient-to-br from-cyan-900 to-blue-950" />
           
           <div className="relative z-10 max-w-md text-center">
-            <div className="flex justify-center mb-6 text-orange-300">
-               <Flower2 size={48} strokeWidth={1} />
+            <div className="flex justify-center mb-6 text-cyan-300">
+              <CircleIcon size={48} strokeWidth={1} /> 
             </div>
-            <h2 className="text-3xl md:text-5xl font-serif text-white mb-6">Saguna</h2>
-            <p className="text-orange-100 text-lg md:text-xl font-light italic mb-8">
-              " The Manifested Divine"
+            <h2 className="text-3xl md:text-5xl font-serif text-white mb-6">Karma</h2>
+            <p className="text-cyan-100 text-lg md:text-xl font-light italic mb-8">
+              "The Path of Action and Consequence"
             </p>
-            <div className="text-orange-50 space-y-4 text-left border-l-2 border-orange-500/50 pl-6">
-              <p>Focus on <strong>Bhakti</strong> (Devotion)</p>
-              <p>God appears in infinite forms to connect with us.</p>
-              <p>Worship through ritual (Pooja), chanting, and festivals.</p>
+            <div className="text-blue-100 space-y-4 text-left border-l-2 border-cyan-500/50 pl-6">
+              <p>Focus on <strong>Intent</strong> (Nishkama Karma)</p>
+              <p>Values: Effort, Accountability, and Impact.</p>
+              <p>Worship through Work, Education, and Personal Growth.</p>
             </div>
           </div>
         </div>
 
-        {/* --- CENTER MERGE: The Synthesis --- */}
+        {/* 🚨 --- CENTER MERGE: The Synthesis (Seva/Community Conclusion) --- 🚨 */}
         <div 
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
           style={{ opacity: overlayOpacity }}
         >
-          <div className="absolute inset-0 bg-indigo-950" /> {/* Solid background cover */}
+          <div className="absolute inset-0 z-0">
+        {/* 1. The Image */}
+        <img 
+          src={elephant} // Uses the imported variable
+          alt="Hindu Background Pattern"
+          className="w-full h-full object-cover  opacity-50 " 
+          // Added 'grayscale' to keep it neutral/serious. Remove if you want the image's original colors.
+        />
+        {/* 2. Black fade for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+
+
+      </div>
           <div className="relative z-20 text-center max-w-3xl px-6">
-            <h2 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-white to-yellow-200 mb-8">
-              Ekam sat vipra bahudha vadanti 
+            <h2 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-lime-300 via-white to-emerald-300 mb-8">
+              Moksha
             </h2>
             <h3 className="text-2xl text-white font-light mb-8">
-              "Truth is One, though the wise call it by many names."
+              Liberation From Samsara
             </h3>
-            <p className="text-lg text-indigo-200 leading-relaxed">
-              Hinduism is not a choice between these two, but a bridge between them. 
-              Whether through abstract meditation or vibrant ritual, the destination remains the same.
+            <p className="text-lg text-white leading-relaxed mb-12">
+              The Hindu community is huge, including deep traditions in addition to modern practices. However, regardless of what path you follow, everyone is united through common beliefs such as Moksha, Samsara, and Karma.
             </p>
+            {/* Final concluding thought on unity */}
+            <p className="text-xl font-medium text-white/90 italic">
+              A community shaped by many paths, but brought together by a shared commitment to learning, faith, and service.            </p>
           </div>
         </div>
 
@@ -317,7 +327,6 @@ const SplitScreen = () => {
     </div>
   );
 };
-
 
 
 
@@ -381,8 +390,9 @@ const InteractiveMap = () => {
 
          {/* 2. REALISTIC CONTINENTS (High-Fidelity Paths) */}
           <g fill="#127221" stroke="#dce4ad" strokeWidth="1" opacity="0.8">
+            {/*America*/}
+            <path d="M 670,160 L 730,150 L 800,155 L 870,180 L 930,170 L 960,200 L 910,230 L 900,280 L 915,320 L 890,330 L 850,300 L 810,380 L 780,360 L 750,300 L 700,280 L 660,250 L 630,200 L 610,170 L 650,175 Z" /> 
             {/* Asia*/}
-            <path d="M 670,160 L 730,150 L 800,155 L 870,140 L 930,150 L 960,200 L 910,230 L 900,280 L 915,320 L 890,330 L 850,300 L 810,380 L 780,360 L 750,300 L 700,280 L 660,250 L 630,200 L 610,170 L 650,175 Z" /> 
             <path d="M 50,200 L 80,180 L 120,190 L 150,150 L 200,140 L 250,130 L 350,100 L 420,120 L 440,180 L 420,220 L 380,240 L 350,280 L 320,320 L 280,310 L 250,280 L 230,260 L 220,280 L 200,270 L 180,230 L 150,220 L 100,240 L 50,220 Z" />          
           </g>
 
@@ -662,7 +672,7 @@ const ChooseYourValues = () => {
 
             <div className="mt-12 p-6 bg-white/5 rounded-xl border border-white/5">
               <p className="text-base md:text-lg text-white/70">
-                Hinduism isn’t a strict, fixed doctrine—it’s a diverse tradition with many beliefs and practices. Each person can follow the path that feels right to them.
+                Hinduism isn’t a strict, fixed doctrine-it’s a diverse tradition with many beliefs and practices. Each person can follow the path that feels right to them.
               </p>
             </div>
 
@@ -741,13 +751,13 @@ export default function App() {
       {showNav && (
         <>
           <div data-section="1">
-            <SplitScreen />
+            <ChooseYourValues />
           </div>
           <div data-section="2">
             <InteractiveMap />
           </div>
           <div data-section="3">
-            <ChooseYourValues />
+            <SplitScreen />
           </div>
         </>
       )}
