@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, BookOpen, Heart, Users, Sun, Sparkles, Flower2 } from 'lucide-react';
 import { getGeminiResponse } from './geminiService';
+import omImage from './assets/om.jpg'; 
+import templeImage from './assets/temple.jpg';
+
 
 // Types
 interface Particle {
@@ -15,9 +18,6 @@ interface Particle {
 interface LandingPageProps {
   onContinue: () => void;
 }
-
-
-// Landing Page Component
 const LandingPage = ({ onContinue }: LandingPageProps) => {
   const [activeTab, setActiveTab] = useState('essence');
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -74,15 +74,26 @@ const LandingPage = ({ onContinue }: LandingPageProps) => {
   const activeContent = content[activeTab as keyof typeof content];
 
   return (
-    // Changed gradient to Saffron/Orange/Purple mix for a more "Hindu" aesthetic while keeping it modern
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-orange-900 via-red-900 to-indigo-900 flex items-center justify-center font-sans">
+    <div className="min-h-screen relative overflow-hidden bg-black flex items-center justify-center font-sans">
       
-      {/* Animated Particles */}
+      {/* === BACKGROUND LAYER === */}
       <div className="absolute inset-0 z-0">
+        {/* 1. The Image */}
+        <img 
+          src={templeImage} // Uses the imported variable
+          alt="Hindu Background Pattern"
+          className="w-full h-full object-cover object-[10%_100%] opacity-50 " 
+          // Added 'grayscale' to keep it neutral/serious. Remove if you want the image's original colors.
+        />
+        {/* 2. Black fade for text readability */}
+      </div>
+
+      {/* Animated Particles */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
         {particles.map(p => (
           <div
             key={p.id}
-            className="absolute rounded-full bg-yellow-100 opacity-30"
+            className="absolute rounded-full bg-white opacity-20" // Changed to white for neutral look
             style={{
               left: `${p.x}%`,
               top: `${p.y}%`,
@@ -96,11 +107,11 @@ const LandingPage = ({ onContinue }: LandingPageProps) => {
 
       <style>{`
         @keyframes float {
-          0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
-          50% { transform: translateY(-20px) translateX(10px); opacity: 0.6; }
+          0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.2; }
+          50% { transform: translateY(-20px) translateX(10px); opacity: 0.5; }
         }
         .text-glow {
-          text-shadow: 0 0 20px rgba(255, 200, 100, 0.3);
+          text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
         }
       `}</style>
 
@@ -108,28 +119,28 @@ const LandingPage = ({ onContinue }: LandingPageProps) => {
       <div className="relative z-10 w-full max-w-5xl px-6 flex flex-col items-center">
         
         {/* Header */}
-        <h1 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-orange-100 mb-2 text-center text-glow">
+        <h1 className="text-5xl md:text-7xl font-bold text-white mb-2 text-center text-glow">
           What is Hinduism?
         </h1>
-        <p className="text-white/70 text-lg mb-12 text-center max-w-2xl">
+        <p className="text-white/70 text-lg mb-12 text-center max-w-2xl font-light">
           Explore the facets of a tradition that spans thousands of years.
         </p>
 
         <div className="grid md:grid-cols-12 gap-8 w-full">
           
-          {/* Navigation/Pillars (Left Side on Desktop, Top on Mobile) */}
+          {/* Navigation/Pillars */}
           <div className="md:col-span-4 flex flex-col gap-3">
             {Object.entries(content).map(([key, data]) => (
               <button
                 key={key}
                 onClick={() => handleTabChange(key)}
-                className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 border text-left
+                className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 border text-left backdrop-blur-sm
                   ${activeTab === key 
-                    ? 'bg-white/20 border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.2)]' 
-                    : 'bg-black/20 border-transparent hover:bg-black/30 hover:border-white/10'
+                    ? 'bg-white/10 border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.1)]' 
+                    : 'bg-black/40 border-transparent hover:bg-black/60 hover:border-white/10'
                   }`}
               >
-                <div className={`p-2 rounded-lg transition-colors ${activeTab === key ? 'text-yellow-300' : 'text-white/60 group-hover:text-white'}`}>
+                <div className={`p-2 rounded-lg transition-colors ${activeTab === key ? 'text-white' : 'text-white/60 group-hover:text-white'}`}>
                   {data.icon}
                 </div>
                 <div>
@@ -141,17 +152,12 @@ const LandingPage = ({ onContinue }: LandingPageProps) => {
             ))}
           </div>
 
-          {/* Display Area (Right Side) */}
+          {/* Display Area */}
           <div className="md:col-span-8">
-            <div className="h-full min-h-[300px] bg-black/20 backdrop-blur-xl border border-white/10 rounded-2xl p-8 md:p-12 flex flex-col justify-center relative overflow-hidden">
+            <div className="h-full min-h-[300px] bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-8 md:p-12 flex flex-col justify-center relative overflow-hidden shadow-2xl">
               
-              {/* Decorative background element inside card */}
-              <div className="absolute -right-10 -bottom-10 opacity-5">
-                 <Sun size={200} />
-              </div>
-
               <div className={`transition-all duration-300 transform ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
-                <h2 className="text-yellow-400 font-medium tracking-widest uppercase text-sm mb-3">
+                <h2 className="text-white/60 font-medium tracking-widest uppercase text-sm mb-3">
                   {activeContent.subtitle}
                 </h2>
                 <h3 className="text-3xl md:text-4xl text-white font-serif mb-6 leading-tight">
@@ -168,7 +174,7 @@ const LandingPage = ({ onContinue }: LandingPageProps) => {
         {/* Footer Action */}
         <button
           onClick={onContinue}
-          className="mt-16 group relative px-8 py-4 bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-900 rounded-full font-bold text-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all transform hover:-translate-y-1 flex items-center gap-2"
+          className="mt-16 group relative px-8 py-4 bg-white text-black rounded-full font-bold text-lg hover:bg-gray-200 transition-all transform hover:-translate-y-1 flex items-center gap-2"
         >
           Begin the Journey 
           <ChevronDown className="group-hover:translate-y-1 transition-transform" />
@@ -295,7 +301,7 @@ const SplitScreen = () => {
           <div className="absolute inset-0 bg-indigo-950" /> {/* Solid background cover */}
           <div className="relative z-20 text-center max-w-3xl px-6">
             <h2 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-white to-yellow-200 mb-8">
-              Ekam Sat
+              Ekam sat vipra bahudha vadanti 
             </h2>
             <h3 className="text-2xl text-white font-light mb-8">
               "Truth is One, though the wise call it by many names."
@@ -522,11 +528,12 @@ const InteractiveMap = () => {
 
 
 
-// Choose Your Values Component
 const ChooseYourValues = () => {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const [showResult, setShowResult] = useState(false);
   const [responseString, setResponseString] = useState("");
+  // I kept this state as it's useful for the UI, but you can remove it if you prefer
+  const [isLoading, setIsLoading] = useState(false); 
 
   const values = ['Community', 'Ritual', 'God', 'Family', 'Food', 'Service', 'Freedom'];
 
@@ -540,19 +547,39 @@ const ChooseYourValues = () => {
 
   const handleSubmit = async () => {
     if (selectedValues.length >= 1 && selectedValues.length <= 3) {
-      const result = await getGeminiResponse(selectedValues);
-      setResponseString(result.message);
-      setShowResult(true);
+      setIsLoading(true);
+      try {
+        // YOUR ORIGINAL LOGIC RESTORED
+        const result = await getGeminiResponse(selectedValues);
+        setResponseString(result.message);
+        setShowResult(true);
+      } catch (error) {
+        console.error("Error fetching response:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-900 via-purple-800 to-fuchsia-900 flex items-center justify-center p-8 py-20">
-      <div className="max-w-4xl w-full">
-        <h2 className="text-4xl md:text-5xl font-bold text-white text-center mb-6">
+    <div className="min-h-screen relative overflow-hidden bg-black flex items-center justify-center p-8 py-20 font-sans">
+      
+      {/* === BACKGROUND LAYER === */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src={omImage} 
+          alt="Hindu Background Pattern"
+          className="w-full h-full object-cover opacity-50" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+      </div>
+
+      {/* === CONTENT LAYER === */}
+      <div className="relative z-10 max-w-4xl w-full">
+        <h2 className="text-4xl md:text-5xl font-bold text-white text-center mb-6 drop-shadow-lg">
           Does Hinduism Align With Your Beliefs? 
         </h2>
-        <p className="text-lg md:text-xl text-white/80 text-center mb-12">
+        <p className="text-lg md:text-xl text-white/80 text-center mb-12 font-light">
           Choose up to 3 values that resonate with you
         </p>
 
@@ -564,10 +591,10 @@ const ChooseYourValues = () => {
                 <button
                   key={value}
                   onClick={() => toggleValue(value)}
-                  className={`px-6 md:px-8 py-3 md:py-4 rounded-full text-lg md:text-xl font-semibold transition-all transform hover:scale-105 ${
+                  className={`px-6 md:px-8 py-3 md:py-4 rounded-full text-lg md:text-xl font-semibold transition-all transform hover:scale-105 border backdrop-blur-sm ${
                     selectedValues.includes(value)
-                      ? 'bg-white text-purple-900 shadow-2xl scale-110'
-                      : 'bg-white/20 text-white hover:bg-white/30'
+                      ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)] scale-110'
+                      : 'bg-black/40 text-white border-white/10 hover:bg-white/10'
                   }`}
                   disabled={!selectedValues.includes(value) && selectedValues.length >= 3}
                 >
@@ -577,13 +604,16 @@ const ChooseYourValues = () => {
             </div>
 
             {/* Selected Values Display */}
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 mb-8">
-              <p className="text-white text-center text-lg mb-4">
-                Selected ({selectedValues.length}/3):
+            <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-8 mb-8 shadow-2xl">
+              <p className="text-white/60 text-center text-sm uppercase tracking-widest mb-4">
+                Selected ({selectedValues.length}/3)
               </p>
-              <div className="flex flex-wrap justify-center gap-4 min-h-16 items-center">
+              <div className="flex flex-wrap justify-center gap-4 min-h-[60px] items-center">
+                {selectedValues.length === 0 && (
+                   <span className="text-white/30 italic">Select values above...</span>
+                )}
                 {selectedValues.map(value => (
-                  <span key={value} className="bg-white text-purple-900 px-6 py-3 rounded-full font-bold text-lg">
+                  <span key={value} className="bg-white text-black px-6 py-2 rounded-full font-bold text-lg shadow-lg">
                     {value}
                   </span>
                 ))}
@@ -593,50 +623,61 @@ const ChooseYourValues = () => {
             {/* Submit Button */}
             <button
               onClick={handleSubmit}
-              disabled={selectedValues.length === 0 || selectedValues.length > 3}
-              className={`w-full py-4 rounded-full text-xl font-bold transition-all ${
-                selectedValues.length >= 1 && selectedValues.length <= 3
-                  ? 'bg-white text-purple-900 hover:bg-purple-100 cursor-pointer'
-                  : 'bg-white/20 text-white/50 cursor-not-allowed'
+              disabled={selectedValues.length === 0 || selectedValues.length > 3 || isLoading}
+              className={`w-full py-4 rounded-full text-xl font-bold transition-all flex items-center justify-center gap-2 ${
+                selectedValues.length >= 1 && selectedValues.length <= 3 && !isLoading
+                  ? 'bg-white text-black hover:bg-gray-200 cursor-pointer shadow-[0_0_20px_rgba(255,255,255,0.2)]'
+                  : 'bg-white/10 text-white/30 cursor-not-allowed'
               }`}
             >
-              {selectedValues.length >= 1 && selectedValues.length <= 3 ? 'See Your Path' : 'Select a value.'}
+              {isLoading ? (
+                 <span className="animate-pulse">Consulting Wisdom...</span>
+              ) : (
+                 selectedValues.length >= 1 ? 'See Your Path' : 'Select a value'
+              )}
             </button>
           </>
         ) : (
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 md:p-12 text-center">
+          /* RESULT VIEW */
+          <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl p-8 md:p-12 text-center animate-in fade-in zoom-in-95 duration-500 shadow-2xl">
             <div className="mb-8">
-              <p className="text-xl md:text-2xl text-white mb-6">Values:</p>
+              <p className="text-white/60 uppercase tracking-widest text-sm mb-6">Your Values</p>
               <div className="flex flex-wrap justify-center gap-4 mb-8">
                 {selectedValues.map(value => (
-                  <span key={value} className="bg-white text-purple-900 px-6 py-3 rounded-full font-bold text-xl">
+                  <span key={value} className="bg-white/10 border border-white/20 text-white px-6 py-3 rounded-full font-bold text-xl">
                     {value}
                   </span>
                 ))}
               </div>
             </div>
 
-            <div className="border-t border-white/20 pt-8">
-              <p className="text-2xl md:text-3xl text-white font-bold mb-6">
-                See for yourself - 
+            <div className="border-t border-white/10 pt-8">
+              <p className="text-2xl md:text-3xl text-white font-serif italic mb-6">
+                "Alignment Found"
               </p>
-              <p className="text-xl md:text-2xl text-white italic mb-4">
+              <p className="text-xl md:text-2xl text-white/90 leading-relaxed font-light mb-4">
                 "{responseString}"
               </p>
             </div>
 
-            <div className="mt-12 p-6 bg-white/5 rounded-xl">
-              <p className="text-base md:text-lg text-white/90">
-                Hinduism isn’t a strict, fixed doctrine—it’s a diverse tradition with many beliefs and practices. Each person can follow the path that feels right to them.              
+            <div className="mt-12 p-6 bg-white/5 rounded-xl border border-white/5">
+              <p className="text-base md:text-lg text-white/70">
+                Hinduism isn’t a strict, fixed doctrine—it’s a diverse tradition with many beliefs and practices. Each person can follow the path that feels right to them.
               </p>
             </div>
+
+            <button 
+                onClick={() => setShowResult(false)}
+                className="mt-8 text-white/50 hover:text-white underline transition-colors"
+            >
+                Start Over
+            </button>
           </div>
         )}
       </div>
     </div>
   );
 };
-
 
 
 
