@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Volume2, VolumeX } from 'lucide-react';
+import { ChevronDown, Volume2, VolumeX, BookOpen, Heart, Users, Sun, Sparkles, Flower2 } from 'lucide-react';
 import { getGeminiResponse } from './geminiService';
 
 // Types
@@ -19,44 +19,70 @@ interface LandingPageProps {
 
 // Landing Page Component
 const LandingPage = ({ onContinue }: LandingPageProps) => {
-  const [sliderValue, setSliderValue] = useState(50);
+  const [activeTab, setActiveTab] = useState('essence');
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [isAnimating, setIsAnimating] = useState(false);
 
+  // Initialize Particles
   useEffect(() => {
-    const newParticles: Particle[] = Array.from({ length: 30 }, (_, i) => ({
+    const newParticles: Particle[] = Array.from({ length: 40 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 4 + 2,
+      size: Math.random() * 3 + 1,
       duration: Math.random() * 20 + 10
     }));
     setParticles(newParticles);
   }, []);
 
-  const getQuote = () => {
-    if (sliderValue < 50) {
-      return {
-        text: "I just think there's an external force... I don't really perform a lot of rituals.",
-        author: "— Saba"
-      };
-    } else {
-      return {
-        text: "I have to do a Pooja every day.",
-        author: "— Kumbhar"
-      };
+  const content = {
+    essence: {
+      title: "Sanatana Dharma",
+      subtitle: "The Eternal Order",
+      text: "Hinduism is a way of life just as much as it's a religious faith. It is the world's oldest living tradition, rooted in the pursuit of truth (Satya) and duty (Dharma).",
+      icon: <Sun className="w-6 h-6" />
+    },
+    philosophy: {
+      title: "The Philosophy",
+      subtitle: "Karma & Reincarnation",
+      text: "It teaches that every action has a consequence (Karma), and the soul (Atman) is eternal, journeying through cycles of birth and rebirth until it finds liberation.",
+      icon: <BookOpen className="w-6 h-6" />
+    },
+    practice: {
+      title: "The Practice",
+      subtitle: "Ritual & Devotion",
+      text: "From grand temple festivals to quiet home shrines (Pooja), faith is practiced through various rituals and traditions.",
+      icon: <Heart className="w-6 h-6" />
+    },
+    diversity: {
+      title: "The Diversity",
+      subtitle: "Many Paths, One Truth",
+      text: "It offers the freedom of staying true to your own values; whether one believes in one God, many forms of God, or a formless energy, all are accepted.",
+      icon: <Users className="w-6 h-6" />
     }
   };
 
-  const quote = getQuote();
+  const handleTabChange = (key: string) => {
+    if (activeTab === key) return;
+    setIsAnimating(true);
+    setTimeout(() => {
+      setActiveTab(key);
+      setIsAnimating(false);
+    }, 300); // Wait for fade out
+  };
+
+  const activeContent = content[activeTab as keyof typeof content];
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center">
+    // Changed gradient to Saffron/Orange/Purple mix for a more "Hindu" aesthetic while keeping it modern
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-orange-900 via-red-900 to-indigo-900 flex items-center justify-center font-sans">
+      
       {/* Animated Particles */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-0">
         {particles.map(p => (
           <div
             key={p.id}
-            className="absolute rounded-full bg-white opacity-20"
+            className="absolute rounded-full bg-yellow-100 opacity-30"
             style={{
               left: `${p.x}%`,
               top: `${p.y}%`,
@@ -70,62 +96,84 @@ const LandingPage = ({ onContinue }: LandingPageProps) => {
 
       <style>{`
         @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
+          0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.3; }
+          50% { transform: translateY(-20px) translateX(10px); opacity: 0.6; }
+        }
+        .text-glow {
+          text-shadow: 0 0 20px rgba(255, 200, 100, 0.3);
         }
       `}</style>
 
-      {/* Content */}
-      <div className="relative z-10 text-center px-8 max-w-4xl">
-        <h1 className="text-5xl md:text-7xl font-bold text-white mb-8">
-          What defines faith?
+      {/* Main Content Container */}
+      <div className="relative z-10 w-full max-w-5xl px-6 flex flex-col items-center">
+        
+        {/* Header */}
+        <h1 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-orange-100 mb-2 text-center text-glow">
+          What is Hinduism?
         </h1>
+        <p className="text-white/70 text-lg mb-12 text-center max-w-2xl">
+          Explore the facets of a tradition that spans thousands of years.
+        </p>
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 md:p-12 shadow-2xl">
-          {/* Slider Labels */}
-          <div className="flex justify-between mb-4 text-white font-semibold">
-            <span className={`transition-all ${sliderValue < 50 ? 'text-2xl' : 'text-lg opacity-60'}`}>
-              Internal Belief
-            </span>
-            <span className={`transition-all ${sliderValue >= 50 ? 'text-2xl' : 'text-lg opacity-60'}`}>
-              Practice
-            </span>
+        <div className="grid md:grid-cols-12 gap-8 w-full">
+          
+          {/* Navigation/Pillars (Left Side on Desktop, Top on Mobile) */}
+          <div className="md:col-span-4 flex flex-col gap-3">
+            {Object.entries(content).map(([key, data]) => (
+              <button
+                key={key}
+                onClick={() => handleTabChange(key)}
+                className={`group flex items-center gap-4 p-4 rounded-xl transition-all duration-300 border text-left
+                  ${activeTab === key 
+                    ? 'bg-white/20 border-yellow-400/50 shadow-[0_0_15px_rgba(250,204,21,0.2)]' 
+                    : 'bg-black/20 border-transparent hover:bg-black/30 hover:border-white/10'
+                  }`}
+              >
+                <div className={`p-2 rounded-lg transition-colors ${activeTab === key ? 'text-yellow-300' : 'text-white/60 group-hover:text-white'}`}>
+                  {data.icon}
+                </div>
+                <div>
+                  <h3 className={`font-semibold text-lg transition-colors ${activeTab === key ? 'text-white' : 'text-white/70 group-hover:text-white'}`}>
+                    {data.title}
+                  </h3>
+                </div>
+              </button>
+            ))}
           </div>
 
-          {/* Slider */}
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={sliderValue}
-            onChange={(e) => setSliderValue(Number(e.target.value))}
-            className="w-full h-3 bg-white/20 rounded-lg appearance-none cursor-pointer mb-8"
-            style={{
-              background: `linear-gradient(to right, #60a5fa ${sliderValue}%, rgba(255,255,255,0.2) ${sliderValue}%)`
-            }}
-          />
+          {/* Display Area (Right Side) */}
+          <div className="md:col-span-8">
+            <div className="h-full min-h-[300px] bg-black/20 backdrop-blur-xl border border-white/10 rounded-2xl p-8 md:p-12 flex flex-col justify-center relative overflow-hidden">
+              
+              {/* Decorative background element inside card */}
+              <div className="absolute -right-10 -bottom-10 opacity-5">
+                 <Sun size={200} />
+              </div>
 
-          {/* Quote Display */}
-          <div className="min-h-32 flex flex-col justify-center">
-            <p className="text-xl md:text-2xl text-white italic mb-4 transition-all duration-500">
-              "{quote.text}"
-            </p>
-            <p className="text-lg text-white/80 transition-all duration-500">
-              {quote.author}
-            </p>
+              <div className={`transition-all duration-300 transform ${isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}>
+                <h2 className="text-yellow-400 font-medium tracking-widest uppercase text-sm mb-3">
+                  {activeContent.subtitle}
+                </h2>
+                <h3 className="text-3xl md:text-4xl text-white font-serif mb-6 leading-tight">
+                  {activeContent.title}
+                </h3>
+                <p className="text-xl text-white/90 leading-relaxed font-light">
+                  "{activeContent.text}"
+                </p>
+              </div>
+            </div>
           </div>
-
-          <p className="text-white/70 mt-8 text-lg">
-            Move the slider to explore the spectrum of Hindu religious identity
-          </p>
         </div>
 
+        {/* Footer Action */}
         <button
           onClick={onContinue}
-          className="mt-12 px-8 py-4 bg-white text-purple-900 rounded-full font-bold text-lg hover:bg-purple-100 transition-all transform hover:scale-105 flex items-center gap-2 mx-auto"
+          className="mt-16 group relative px-8 py-4 bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-900 rounded-full font-bold text-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all transform hover:-translate-y-1 flex items-center gap-2"
         >
-          Continue Journey <ChevronDown />
+          Begin the Journey 
+          <ChevronDown className="group-hover:translate-y-1 transition-transform" />
         </button>
+
       </div>
     </div>
   );
@@ -137,193 +185,128 @@ const LandingPage = ({ onContinue }: LandingPageProps) => {
 
 
 
-
-// Split Screen Component
 const SplitScreen = () => {
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!sectionRef.current) return;
-      const rect = sectionRef.current.getBoundingClientRect();
-      const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / window.innerHeight));
-      setScrollProgress(progress);
+      if (!containerRef.current) return;
+      
+      const rect = containerRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const totalDist = rect.height - windowHeight;
+      const scrolled = -rect.top;
+
+      // Calculate 0 to 1 progress based on how far we've scrolled through this component
+      let currentProgress = Math.max(0, Math.min(1, scrolled / totalDist));
+      
+      setProgress(currentProgress);
     };
 
     window.addEventListener('scroll', handleScroll);
-    handleScroll();
+    handleScroll(); // Initial check
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const mergeProgress = scrollProgress > 0.7 ? (scrollProgress - 0.7) / 0.3 : 0;
+  // LOGIC: 
+  // 0.0 - 0.6: The split screen stays static (user reads)
+  // 0.6 - 0.9: The split screen slides out (merges)
+  // 0.9 - 1.0: The final message is fully visible
+  const mergeStart = 0.6;
+  const mergeDuration = 0.3;
+  
+  // Calculate the slide value (0% to 100%)
+  const slideValue = progress < mergeStart 
+    ? 0 
+    : Math.min(1, (progress - mergeStart) / mergeDuration);
+
+  // Calculate opacity for the final overlay
+  const overlayOpacity = slideValue;
 
   return (
-    <div ref={sectionRef} className="min-h-screen bg-gray-900 relative">
-      <div className="h-screen flex sticky top-0">
-        {/* Left Column - Saba (Modern/Abstract) */}
-        <div
-          className="flex-1 bg-gradient-to-br from-blue-500 to-cyan-400 p-8 md:p-12 flex flex-col justify-center items-center text-white relative overflow-hidden"
-          style={{
-            transform: `translateX(-${mergeProgress * 50}%)`,
-            transition: 'transform 0.3s ease-out'
-          }}
-        >
-          <div className="absolute inset-0 opacity-20">
-            {[...Array(20)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute rounded-full bg-white"
-                style={{
-                  width: `${Math.random() * 100 + 50}px`,
-                  height: `${Math.random() * 100 + 50}px`,
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animation: `pulse ${Math.random() * 3 + 2}s infinite`
-                }}
-              />
-            ))}
-          </div>
-          
-          <div className="relative z-10 max-w-md">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">The Individual Path</h2>
-            <p className="text-lg md:text-xl mb-4">"It's more about internal belief and cultural connection"</p>
-            <div className="space-y-3 text-base md:text-lg">
-              <p>✦ Personal spirituality</p>
-              <p>✦ Flexible interpretation</p>
-              <p>✦ Modern adaptation</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column - Kumbhar (Traditional/Structured) */}
-        <div
-          className="flex-1 bg-gradient-to-br from-orange-600 to-red-500 p-8 md:p-12 flex flex-col justify-center items-center text-white relative overflow-hidden"
-          style={{
-            transform: `translateX(${mergeProgress * 50}%)`,
-            transition: 'transform 0.3s ease-out'
-          }}
-        >
-          <div className="absolute inset-0 opacity-10">
-            <svg className="w-full h-full" viewBox="0 0 100 100">
-              {[...Array(10)].map((_, i) => (
-                <circle key={i} cx="50" cy="50" r={10 + i * 8} fill="none" stroke="white" strokeWidth="0.5" />
-              ))}
-            </svg>
-          </div>
-
-          <div className="relative z-10 max-w-md">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">The Traditional Path</h2>
-            <p className="text-lg md:text-xl mb-4">"Daily Pooja, following rituals, honoring traditions"</p>
-            <div className="space-y-3 text-base md:text-lg">
-              <p>🕉 Daily practices</p>
-              <p>🕉 Ritual devotion</p>
-              <p>🕉 Ancestral customs</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Convergence Overlay */}
-        {mergeProgress > 0 && (
-          <div 
-            className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-900 to-indigo-900 z-20"
-            style={{ opacity: mergeProgress }}
-          >
-            <div className="text-center text-white px-8">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">One Community</h2>
-              <p className="text-xl md:text-2xl max-w-2xl">
-                Despite different paths, we converge as a united community—at temples, celebrations, and shared moments of cultural pride.
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-      <div className="h-96"></div>
-    </div>
-  );
-};
-
-
-
-
-
-
-
-
-
-
-
-// Diwali Atmosphere Component
-const DiwaliAtmosphere = () => {
-  const [location, setLocation] = useState<'india' | 'usa'>('usa');
-  const [audioPlaying, setAudioPlaying] = useState(false);
-
-  const toggleAudio = () => {
-    setAudioPlaying(!audioPlaying);
-  };
-
-  return (
-    <div className={`min-h-screen transition-all duration-1000 flex items-center justify-center ${
-      location === 'india' 
-        ? 'bg-gradient-to-br from-orange-500 via-red-500 to-pink-600' 
-        : 'bg-gradient-to-br from-amber-900 via-yellow-900 to-orange-900'
-    }`}>
-      <div className="max-w-4xl px-8 text-center py-20">
-        <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">The Sound of Celebration</h2>
+    // 1. HEIGHT INCREASED: h-[400vh] creates a long scroll track
+    <div ref={containerRef} className="relative h-[400vh] bg-black">
+      
+      {/* 2. STICKY WRAPPER: Keeps the content fixed while scrolling the 400vh track */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex">
         
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 md:p-12 shadow-2xl">
-          {/* Toggle Switch */}
-          <div className="flex justify-center items-center gap-4 md:gap-6 mb-12">
-            <button
-              onClick={() => setLocation('india')}
-              className={`px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-lg md:text-xl transition-all ${
-                location === 'india'
-                  ? 'bg-white text-orange-600 scale-110'
-                  : 'bg-white/20 text-white hover:bg-white/30'
-              }`}
-            >
-              India
-            </button>
-            <button
-              onClick={() => setLocation('usa')}
-              className={`px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-lg md:text-xl transition-all ${
-                location === 'usa'
-                  ? 'bg-white text-amber-800 scale-110'
-                  : 'bg-white/20 text-white hover:bg-white/30'
-              }`}
-            >
-              USA
-            </button>
+        {/* --- LEFT: The Philosophical/Internal Path (Nirguna) --- */}
+        <div 
+          className="flex-1 bg-slate-900 relative flex flex-col justify-center items-center px-8 border-r border-white/10"
+          style={{ 
+            transform: `translateX(-${slideValue * 100}%)`,
+            transition: 'transform 0.1s linear' // linear is smoother for scroll-bound anims
+          }}
+        >
+          {/* Abstract visuals for "Formless" */}
+          <div className="absolute inset-0 overflow-hidden opacity-30">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500 rounded-full blur-[100px] animate-pulse" />
           </div>
 
-          {/* Description */}
-          <div className="text-white space-y-6">
-            {location === 'india' ? (
-              <>
-                <p className="text-xl md:text-2xl font-semibold">🎆 Vibrant. Loud. Unrestricted.</p>
-                <p className="text-lg md:text-xl">Firecrackers echo through the streets. Families gather in large celebrations. The night sky explodes with color. No school tomorrow—just pure celebration.</p>
-              </>
-            ) : (
-              <>
-                <p className="text-xl md:text-2xl font-semibold">🏠 Quieter. Intimate. Constrained.</p>
-                <p className="text-lg md:text-xl">The celebration moves indoors. Gentle conversation, the clinking of plates. School the next day. A different kind of warmth, shaped by a new environment.</p>
-              </>
-            )}
+          <div className="relative z-10 max-w-md text-center">
+            <div className="flex justify-center mb-6 text-blue-300">
+              <Sparkles size={48} strokeWidth={1} />
+            </div>
+            <h2 className="text-3xl md:text-5xl font-serif text-white mb-6">Nirguna</h2>
+            <p className="text-blue-100 text-lg md:text-xl font-light italic mb-8">
+              "The Formless Absolute"
+            </p>
+            <div className="text-slate-300 space-y-4 text-left border-l-2 border-blue-500/50 pl-6">
+              <p>Focus on <strong>Vedanta</strong> (Philosophy)</p>
+              <p>God is energy, consciousness, and truth.</p>
+              <p>Worship through meditation (Dhyana) and self-inquiry.</p>
+            </div>
           </div>
-
-          {/* Audio Toggle */}
-          <button
-            onClick={toggleAudio}
-            className="mt-8 px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded-full flex items-center gap-3 mx-auto transition-all"
-          >
-            {audioPlaying ? <Volume2 /> : <VolumeX />}
-            {audioPlaying ? 'Sound On' : 'Sound Off'}
-          </button>
-
-          <p className="text-white/70 mt-8 italic">
-            "The atmosphere changes based on where you are... it's quieter here."
-          </p>
         </div>
+
+        {/* --- RIGHT: The Devotional/Ritual Path (Saguna) --- */}
+        <div 
+          className="flex-1 bg-gradient-to-br from-orange-900 to-red-950 relative flex flex-col justify-center items-center px-8"
+          style={{ 
+            transform: `translateX(${slideValue * 100}%)`,
+            transition: 'transform 0.1s linear'
+          }}
+        >
+          {/* Ornamented visuals for "Form" */}
+          <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/black-scales.png')] mix-blend-overlay" />
+          
+          <div className="relative z-10 max-w-md text-center">
+            <div className="flex justify-center mb-6 text-orange-300">
+               <Flower2 size={48} strokeWidth={1} />
+            </div>
+            <h2 className="text-3xl md:text-5xl font-serif text-white mb-6">Saguna</h2>
+            <p className="text-orange-100 text-lg md:text-xl font-light italic mb-8">
+              " The Manifested Divine"
+            </p>
+            <div className="text-orange-50 space-y-4 text-left border-l-2 border-orange-500/50 pl-6">
+              <p>Focus on <strong>Bhakti</strong> (Devotion)</p>
+              <p>God appears in infinite forms to connect with us.</p>
+              <p>Worship through ritual (Pooja), chanting, and festivals.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* --- CENTER MERGE: The Synthesis --- */}
+        <div 
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          style={{ opacity: overlayOpacity }}
+        >
+          <div className="absolute inset-0 bg-indigo-950" /> {/* Solid background cover */}
+          <div className="relative z-20 text-center max-w-3xl px-6">
+            <h2 className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-white to-yellow-200 mb-8">
+              Ekam Sat
+            </h2>
+            <h3 className="text-2xl text-white font-light mb-8">
+              "Truth is One, though the wise call it by many names."
+            </h3>
+            <p className="text-lg text-indigo-200 leading-relaxed">
+              Hinduism is not a choice between these two, but a bridge between them. 
+              Whether through abstract meditation or vibrant ritual, the destination remains the same.
+            </p>
+          </div>
+        </div>
+
       </div>
     </div>
   );
@@ -339,7 +322,7 @@ const DiwaliAtmosphere = () => {
 
 // Interactive Map Component
 const InteractiveMap = () => {
-  const [hoveredLocation, setHoveredLocation] = useState<'india' | 'seattle' | null>(null);
+  const [hoveredLocation, setHoveredLocation] = useState<'India' | 'US' | null>(null);
   const [showConclusion, setShowConclusion] = useState(false);
 
   return (
@@ -358,8 +341,8 @@ const InteractiveMap = () => {
               cy="250"
               r="40"
               className="cursor-pointer transition-all"
-              fill={hoveredLocation === 'india' ? '#f97316' : '#fb923c'}
-              onMouseEnter={() => setHoveredLocation('india')}
+              fill={hoveredLocation === 'India' ? '#f97316' : '#fb923c'}
+              onMouseEnter={() => setHoveredLocation('India')}
               onMouseLeave={() => setHoveredLocation(null)}
             />
             <text x="600" y="260" textAnchor="middle" fill="white" fontSize="20" fontWeight="bold">
@@ -372,8 +355,8 @@ const InteractiveMap = () => {
               cy="150"
               r="40"
               className="cursor-pointer transition-all"
-              fill={hoveredLocation === 'seattle' ? '#3b82f6' : '#60a5fa'}
-              onMouseEnter={() => setHoveredLocation('seattle')}
+              fill={hoveredLocation === 'US' ? '#3b82f6' : '#60a5fa'}
+              onMouseEnter={() => setHoveredLocation('US')}
               onMouseLeave={() => setHoveredLocation(null)}
             />
             <text x="200" y="155" textAnchor="middle" fill="white" fontSize="20" fontWeight="bold">
@@ -401,14 +384,14 @@ const InteractiveMap = () => {
           </svg>
 
           {/* Tooltips */}
-          {hoveredLocation === 'india' && (
+          {hoveredLocation === 'India' && (
             <div className="mt-6 md:absolute md:top-1/2 md:right-12 bg-orange-500 text-white p-6 rounded-xl shadow-2xl max-w-xs">
               <p className="text-lg font-semibold">"Intense, strictly followed"</p>
               <p className="text-sm mt-2">Deep-rooted traditions, daily rituals, surrounded by cultural immersion</p>
             </div>
           )}
 
-          {hoveredLocation === 'seattle' && (
+          {hoveredLocation === 'US' && (
             <div className="mt-6 md:absolute md:top-1/4 md:left-12 bg-blue-500 text-white p-6 rounded-xl shadow-2xl max-w-xs">
               <p className="text-lg font-semibold">"More free, individual choice"</p>
               <p className="text-sm mt-2">Diversified environment, personal interpretation, adapted practices</p>
@@ -472,10 +455,10 @@ const ChooseYourValues = () => {
     <div className="min-h-screen bg-gradient-to-br from-violet-900 via-purple-800 to-fuchsia-900 flex items-center justify-center p-8 py-20">
       <div className="max-w-4xl w-full">
         <h2 className="text-4xl md:text-5xl font-bold text-white text-center mb-6">
-          Construct Your Definition
+          Does Hinduism Align With Your Beliefs? 
         </h2>
         <p className="text-lg md:text-xl text-white/80 text-center mb-12">
-          Choose 3 values that resonate with you
+          Choose up to 3 values that resonate with you
         </p>
 
         {!showResult ? (
@@ -501,7 +484,7 @@ const ChooseYourValues = () => {
             {/* Selected Values Display */}
             <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 mb-8">
               <p className="text-white text-center text-lg mb-4">
-                Your chosen values ({selectedValues.length}/3):
+                Selected ({selectedValues.length}/3):
               </p>
               <div className="flex flex-wrap justify-center gap-4 min-h-16 items-center">
                 {selectedValues.map(value => (
@@ -522,13 +505,13 @@ const ChooseYourValues = () => {
                   : 'bg-white/20 text-white/50 cursor-not-allowed'
               }`}
             >
-              {selectedValues.length >= 1 && selectedValues.length <= 3 ? 'See Your Path' : 'Select up to 3 values.'}
+              {selectedValues.length >= 1 && selectedValues.length <= 3 ? 'See Your Path' : 'Select a value.'}
             </button>
           </>
         ) : (
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 md:p-12 text-center">
             <div className="mb-8">
-              <p className="text-xl md:text-2xl text-white mb-6">Your chosen path includes:</p>
+              <p className="text-xl md:text-2xl text-white mb-6">Values:</p>
               <div className="flex flex-wrap justify-center gap-4 mb-8">
                 {selectedValues.map(value => (
                   <span key={value} className="bg-white text-purple-900 px-6 py-3 rounded-full font-bold text-xl">
@@ -540,18 +523,16 @@ const ChooseYourValues = () => {
 
             <div className="border-t border-white/20 pt-8">
               <p className="text-2xl md:text-3xl text-white font-bold mb-6">
-                And that's perfectly valid.
+                See for yourself - 
               </p>
               <p className="text-xl md:text-2xl text-white italic mb-4">
                 "{responseString}"
-                "There's a lot of variations… you can really choose what you want to believe."
               </p>
-              <p className="text-xl text-white/80">— Kumbhar</p>
             </div>
 
             <div className="mt-12 p-6 bg-white/5 rounded-xl">
               <p className="text-base md:text-lg text-white/90">
-                Hinduism is not a fixed doctrine—it's a living, breathing spectrum of practices, beliefs, and values. Your path is yours to define.
+                Hinduism isn’t a strict, fixed doctrine—it’s a diverse tradition with many beliefs and practices. Each person can follow the path that feels right to them.              
               </p>
             </div>
           </div>
@@ -627,12 +608,9 @@ export default function App() {
             <SplitScreen />
           </div>
           <div data-section="2">
-            <DiwaliAtmosphere />
-          </div>
-          <div data-section="3">
             <InteractiveMap />
           </div>
-          <div data-section="4">
+          <div data-section="3">
             <ChooseYourValues />
           </div>
         </>
