@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Volume2, VolumeX, BookOpen, Heart, Users, Sun, Sparkles, Flower2 } from 'lucide-react';
+import { ChevronDown, BookOpen, Heart, Users, Sun, Sparkles, Flower2 } from 'lucide-react';
 import { getGeminiResponse } from './geminiService';
 
 // Types
@@ -319,105 +319,200 @@ const SplitScreen = () => {
 
 
 
-
-// Interactive Map Component
 const InteractiveMap = () => {
-  const [hoveredLocation, setHoveredLocation] = useState<'India' | 'US' | null>(null);
-  const [showConclusion, setShowConclusion] = useState(false);
+  const [activeLocation, setActiveLocation] = useState<'India' | 'Seattle' | null>(null);
+  const [showMigrationEffect, setShowMigrationEffect] = useState(false);
+
+  // Data for the popup cards
+  const locationData = {
+    India: {
+      title: "India",
+      context: "Religion is woven into daily life",
+      factors: [
+        "Religion is more intense",
+        "Much larger communiy",
+        "Engrained in the culture",
+        "Holidays have massive celebrations"
+      ],
+      result: "People practice it often without even thinking about it."
+    },
+    Seattle: {
+      title: "America",
+      context: "Religion is a more of a choice; requires  effort from the community.",
+      factors: [
+        "Diverisfied",
+        "Religion(Hinduism) is separate from cutlure",
+        "Newer generations grow up around different culture - they dont understand why they're hindu"
+        
+      ],
+      result: "Practice either takes more effort or becomes \"more free\" as people and generations gradually assimilate."
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-8 py-20">
-      <div className="max-w-6xl w-full">
-        <h2 className="text-4xl md:text-5xl font-bold text-white text-center mb-12">
-          Migration & Transformation
+    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4 md:p-12 font-sans">
+      
+      <div className="max-w-6xl w-full mb-8 text-center">
+        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          Geography Shapes Faith
         </h2>
+        <p className="text-blue-200 text-lg max-w-2xl mx-auto">
+          How does moving 8,000 miles change the Hindu experience?
+          <br/>
+          <span className="text-sm opacity-70">(click the flight path)</span>
+        </p>
+      </div>
 
-        <div className="relative bg-slate-700/50 rounded-3xl p-8 md:p-12 backdrop-blur">
-          {/* Simplified Map */}
-          <svg viewBox="0 0 800 400" className="w-full h-64 md:h-auto">
-            {/* India */}
-            <circle
-              cx="600"
-              cy="250"
-              r="40"
-              className="cursor-pointer transition-all"
-              fill={hoveredLocation === 'India' ? '#f97316' : '#fb923c'}
-              onMouseEnter={() => setHoveredLocation('India')}
-              onMouseLeave={() => setHoveredLocation(null)}
-            />
-            <text x="600" y="260" textAnchor="middle" fill="white" fontSize="20" fontWeight="bold">
-              India
-            </text>
+      <div className="relative w-full aspect-[16/9] bg-[#0f172a] rounded-3xl overflow-hidden shadow-2xl border border-slate-700">
+        
+        {/* === THE MAP === */}
+        <svg viewBox="0 0 1000 500" className="w-full h-full bg-[#1e3a8a]">
+          {/* 1. Ocean Pattern (Subtle waves) */}
+          <pattern id="waves" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+             <path d="M0 25 Q 12.5 15, 25 25 T 50 25" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1"/>
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#waves)" />
 
-            {/* Seattle */}
-            <circle
-              cx="200"
-              cy="150"
-              r="40"
-              className="cursor-pointer transition-all"
-              fill={hoveredLocation === 'US' ? '#3b82f6' : '#60a5fa'}
-              onMouseEnter={() => setHoveredLocation('US')}
-              onMouseLeave={() => setHoveredLocation(null)}
-            />
-            <text x="200" y="155" textAnchor="middle" fill="white" fontSize="20" fontWeight="bold">
-              Seattle
-            </text>
+         {/* 2. REALISTIC CONTINENTS (High-Fidelity Paths) */}
+          <g fill="#127221" stroke="#dce4ad" strokeWidth="1" opacity="0.8">
+            {/* Asia*/}
+            <path d="M 670,160 L 730,150 L 800,155 L 870,140 L 930,150 L 960,200 L 910,230 L 900,280 L 915,320 L 890,330 L 850,300 L 810,380 L 780,360 L 750,300 L 700,280 L 660,250 L 630,200 L 610,170 L 650,175 Z" /> 
+            <path d="M 50,200 L 80,180 L 120,190 L 150,150 L 200,140 L 250,130 L 350,100 L 420,120 L 440,180 L 420,220 L 380,240 L 350,280 L 320,320 L 280,310 L 250,280 L 230,260 L 220,280 L 200,270 L 180,230 L 150,220 L 100,240 L 50,220 Z" />          
+          </g>
 
-            {/* Connection Line */}
-            <line
-              x1="240"
-              y1="170"
-              x2="560"
-              y2="235"
-              stroke="white"
-              strokeWidth="3"
-              strokeDasharray="10,5"
-              className="cursor-pointer"
-              onClick={() => setShowConclusion(!showConclusion)}
-            />
-            
-            {/* Arrow */}
-            <polygon
-              points="560,235 550,230 550,240"
-              fill="white"
-            />
-          </svg>
+          {/* 3. Connection Line (The Migration) */}
+          {/* Dashed background line */}
+          <path 
+            d="M 300,250 Q 450,50 660,185"
+            fill="none" 
+            stroke="rgba(255,255,255,0.2)" 
+            strokeWidth="3" 
+            strokeDasharray="5,5" 
+          />
+          
+          {/* Animated Flight Path - Clickable */}
+          <path 
+            id="flightPath"
+            d="M 300,250 Q 450,50 660,185" 
+            fill="none" 
+            stroke={showMigrationEffect ? "#fbbf24" : "rgba(255,255,255,0.5)"}
+            strokeWidth="4" 
+            className="cursor-pointer hover:stroke-yellow-400 transition-colors duration-300"
+            onClick={() => setShowMigrationEffect(!showMigrationEffect)}
+          />
 
-          {/* Tooltips */}
-          {hoveredLocation === 'India' && (
-            <div className="mt-6 md:absolute md:top-1/2 md:right-12 bg-orange-500 text-white p-6 rounded-xl shadow-2xl max-w-xs">
-              <p className="text-lg font-semibold">"Intense, strictly followed"</p>
-              <p className="text-sm mt-2">Deep-rooted traditions, daily rituals, surrounded by cultural immersion</p>
+          {/* 4. Interactive Pins */}
+          
+          {/* Seattle Pin */}
+          <g 
+            className="cursor-pointer hover:opacity-100 transition-all duration-300"
+            onMouseEnter={() => setActiveLocation('Seattle')}
+            onMouseLeave={() => setActiveLocation(null)}
+          >
+            <circle cx="660" cy="185" r="15" fill="#60a5fa" className="opacity-40 animate-ping" />
+            <circle cx="660" cy="185" r="8" fill="#3b82f6" stroke="white" strokeWidth="2" />
+            <text x="695" y="205" textAnchor="middle" fill="white" fontWeight="bold" fontSize="14">Seattle</text>
+          </g>
+
+          {/* India Pin */}
+          <g 
+            className="cursor-pointer hover:opacity-100 transition-all duration-300"
+            onMouseEnter={() => setActiveLocation('India')}
+            onMouseLeave={() => setActiveLocation(null)}
+          >
+            <circle cx="300" cy="250" r="15" fill="#f97316" className="opacity-40 animate-ping" />
+            <circle cx="300" cy="250" r="8" fill="#ea580c" stroke="white" strokeWidth="2" />
+            <text x="285" y="275" textAnchor="middle" fill="white" fontWeight="bold" fontSize="14">India</text>
+          </g>
+
+
+          {/* 5. THE PLANE (NATIVE SVG) */}
+          {/* This group is LAST, so it sits ON TOP of everything. No foreignObject needed. */}
+          <g 
+            onClick={() => setShowMigrationEffect(!showMigrationEffect)}
+            className="cursor-pointer hover:scale-110 transition-transform"
+            style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+          >
+             {/* White Circle Background */}
+             <circle cx="0" cy="0" r="24" fill="white" filter="drop-shadow(0px 4px 4px rgba(0,0,0,0.3))" />
+             
+             {/* Plane Icon Path */}
+             <path 
+               transform="translate(-12, -12)" 
+               d="M2 12h20M15 5l7 7-7 7" // Simple arrow/plane shape
+               stroke="#0f172a" 
+               strokeWidth="2.5" 
+               fill="none" 
+               strokeLinecap="round" 
+               strokeLinejoin="round"
+             />
+
+             {/* Animation Logic */}
+             <animateMotion 
+                dur="6s" 
+                repeatCount="indefinite" 
+                path="M 300,250 Q 450,50 660,185"
+                rotate="auto" // This makes the plane point in the direction of travel
+             />
+          </g>
+
+        </svg>
+
+        {/* === OVERLAYS === */}
+
+        {/* 1. Location Details Overlay */}
+        {activeLocation && (
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-20 transition-all pointer-events-none">
+            <div className={`max-w-md w-full bg-white text-slate-900 rounded-2xl p-8 shadow-2xl transform transition-all border-l-8 ${activeLocation === 'India' ? 'border-orange-500' : 'border-blue-500'}`}>
+              <h3 className="text-2xl font-bold mb-1">{locationData[activeLocation].title}</h3>              
+              <p className="italic text-lg mb-6 text-slate-700">"{locationData[activeLocation].context}"</p>
+              
+              <ul className="space-y-3 mb-6">
+                {locationData[activeLocation].factors.map((factor, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <div className={`mt-1.5 min-w-[6px] h-[6px] rounded-full ${activeLocation === 'India' ? 'bg-orange-500' : 'bg-blue-500'}`} />
+                    <span className="text-slate-600">{factor}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="bg-slate-100 p-4 rounded-lg">
+                <p className="font-semibold text-slate-800">Result:</p>
+                <p className="text-slate-600">{locationData[activeLocation].result}</p>
+              </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {hoveredLocation === 'US' && (
-            <div className="mt-6 md:absolute md:top-1/4 md:left-12 bg-blue-500 text-white p-6 rounded-xl shadow-2xl max-w-xs">
-              <p className="text-lg font-semibold">"More free, individual choice"</p>
-              <p className="text-sm mt-2">Diversified environment, personal interpretation, adapted practices</p>
-            </div>
-          )}
-
-          {/* Conclusion */}
-          {showConclusion && (
-            <div className="mt-8 bg-purple-600 text-white p-8 rounded-2xl">
-              <p className="text-2xl font-bold mb-4">Generational Drift</p>
-              <p className="text-xl">
-                "Rituals have gotten less... becoming more free. The environment shapes how we practice and what we choose to keep."
+        {/* 2. Migration Effect (Conclusion) Overlay */}
+        {showMigrationEffect && !activeLocation && (
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/90 to-transparent p-8 md:p-12 text-center z-10">
+            <div className="max-w-3xl mx-auto">
+              <div className="inline-block bg-yellow-500 text-black font-bold px-4 py-1 rounded-full text-sm mb-4">
+              </div>
+              <h3 className="text-3xl font-bold text-white mb-4">
+                The Effect of Migration
+              </h3>
+              <p className="text-xl text-slate-300 leading-relaxed mb-6">
+                When the environment is stripped away, the religion must be reconstructed intellectually. 
+                New environments comes with many require a more conscious understanding and commitment to religion.
+                <br />
+                <span className="text-yellow-400">(Hover over locations)</span>
               </p>
+              <button 
+                onClick={() => setShowMigrationEffect(false)}
+                className="text-white underline opacity-50 hover:opacity-100"
+              >
+                Close Insight
+              </button>
             </div>
-          )}
+          </div>
+        )}
 
-          <p className="text-white/70 text-center mt-8 text-base md:text-lg">
-            Hover over locations • Click the line to reveal insight
-          </p>
-        </div>
       </div>
     </div>
   );
 };
-
-
 
 
 
